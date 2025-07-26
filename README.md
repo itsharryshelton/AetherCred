@@ -83,8 +83,7 @@ The project is split into two main parts:
 
 The PDF export feature is handled entirely client-side within your browser, meaning **no** data is sent to an external server for processing. This is achieved using the popular `jsPDF` and `jspdf-autotable` JavaScript libraries, which are included in the HTML file.
 
-<img width="1395" height="991" alt="firefox_cEvvNtw0qC" src="https://github.com/user-attachments/assets/35e49d0d-8f58-4401-adef-7dbf1d9e2fa7" />
-
+<img width="1096" height="771" alt="image" src="https://github.com/user-attachments/assets/f1e624d8-e1cf-406e-a696-14571641649f" />
 
 When you click the **Download PDF Report** button:
 1. The script gathers the currently loaded user data from the `AetherCred-Data.js` file.
