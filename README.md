@@ -143,10 +143,11 @@ I have several ideas for future enhancements to make AetherCred even more valuab
 -   **Improved Dashboard Interactivity:**
     -   Add advanced filtering options (e.g., filter by MFA type, role, or risk flag).
     -   Implement column sorting directly in the HTML table.
-    -   
+
 -   **Better Webpage Features:**
     -   Toggle between Light and Dark mode.
     -   Main Dashboard for further future tools...
+
 ---
 
 ## Credits
