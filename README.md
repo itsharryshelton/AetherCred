@@ -18,7 +18,6 @@ This tool allows for quick and easy report generating that can be easily shared 
 - **Security Scoring:** Assigns each user a security score from 0-100 based on critical risk factors like MFA enablement, password expiry policies, and privileged access.
 - **Risk Flagging:** Automatically flags potential security risks such as "MFA Not Registered," "Password Expiry Enabled," and "Never Signed In."
 - **Privileged Role Identification:** Highlights users with high-impact administrative roles (e.g., Global Administrator, Security Administrator).
-- **Automated App Registration:** On its first run, the script automatically creates the "AetherCred" Enterprise Application in your tenant, complete with a custom logo and homepage URL.
 - **Interactive Web Dashboard:**
     - Clean, dark-mode interface.
     - At-a-glance summary cards for key metrics.
@@ -100,7 +99,7 @@ This approach ensures both security and convenience, allowing you to create shar
 
 ### PowerShell Script (`AetherCred.ps1`)
 
-You can easily customize the Enterprise Application details by modifying the variables at the top of the script:
+You can easily customize the Application details by modifying the variables at the top of the script:
 
 ```powershell
 # SCRIPT CONFIGURATION
