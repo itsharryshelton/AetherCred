@@ -10,6 +10,8 @@ For detailed guidance, best practices, and remediation advice, visit [aethercred
 
 **AetherCred** is a PowerShell and HTML-based toolkit that provides a clear, actionable overview of your Microsoft Entra ID security posture. It collects and visualises key user, licensing, and policy data in an intuitive, shareable dashboard for both technical and non-technical stakeholders.
 
+**Latest Version:** 3.1
+
 <img width="1691" height="763" alt="chrome_d4QwRPkpmT" src="https://github.com/user-attachments/assets/4cc0fb7e-3ecd-4d13-b11d-17eacd52bda6" />
 
 
@@ -63,6 +65,7 @@ For detailed guidance, best practices, and remediation advice, visit [aethercred
    - `Modules/Run-ConditionalAccessReview.ps1` (Conditional Access Module)
    - `Modules/Run-LicensingReview.ps1` (License Review Module)
    - `Modules/Run-SecurityReview.ps1` (Security Review Module)
+   - `Run-GroupReview.ps1` (Group Review Module)
 
 
 2. **Set Up Modules**
