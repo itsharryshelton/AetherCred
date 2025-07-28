@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherCred Dashboard</title>
+    <link rel="icon" href="https://images.aethercred.co.uk/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .table-cell { padding: 8px 12px; border-bottom: 1px solid #374151; vertical-align: top; }
+        .table-header { padding: 12px; background-color: #1f2937; color: #d1d5db; font-weight: 600; }
+        .risk-high { background-color: #991b1b; color: white; }
+        .risk-medium { background-color: #9a3412; color: white; }
+        .risk-low { background-color: #166534; color: white; }
+        .risk-none { background-color: #374151; color: white; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.8rem; font-weight: 500; margin: 2px; }
+        .toggle-active { background-color: #1d4ed8; color: white; }
+        .toggle-inactive { background-color: #374151; color: #9ca3af; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-gray-200">
+    <nav class="bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="https://aethercred.co.uk/">
+                        <img class="h-8 w-auto" src="https://images.aethercred.co.uk/AetherCredLogoCloud.png" alt="AetherCred Logo" onerror="this.onerror=null;this.src='https://placehold.co/130x32/1f2937/ffffff?text=AetherCred';">
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="https://aethercred.co.uk/practices" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" >Best Practices</a>
+                        <a href="https://aethercred.co.uk/remediation" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Remediation Guides</a>
+                        <a href="https://aethercred.co.uk/how-to-use" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">How to Use</a>
+                        <a href="https://github.com/itsharryshelton/AetherCred" target="_blank" class="text-gray-300 hover:text-white flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8">
+
+    <!-- edit the "src" for the base64 for the Logo on the PDF -->
+    <img id="logo-for-pdf" src="data:image/png;base64,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" style="display:none;" alt="Company Logo for PDF" />
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div>
+                <h1 id="main-title" class="text-4xl font-bold text-white">AetherCred Dashboard</h1>
+                <p id="sub-title" class="text-gray-400 mt-1">Entra ID Security & MFA Posture Report</p>
+                <p id="last-updated" class="text-sm text-gray-500 mt-2">Last updated: Loading...</p>
+            </div>
+            <div class="flex items-center space-x-2 mt-4 md:mt-0">
+                <input type="text" id="search-box" placeholder="Search by name or UPN..." class="bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <button id="pdf-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                    Download PDF Report
+                </button>
+            </div>
+        </header>
+
+        <div class="mb-4">
+            <div class="inline-flex rounded-md shadow-sm" role="group">
+                <button type="button" id="toggle-security" class="px-4 py-2 text-sm font-medium border border-gray-600 rounded-l-lg focus:z-10 focus:ring-2 focus:ring-blue-500">
+                    Security Report
+                </button>
+                <button type="button" id="toggle-ca" class="px-4 py-2 text-sm font-medium border-t border-b border-gray-600 focus:z-10 focus:ring-2 focus:ring-blue-500">
+                    Conditional Access
+                </button>
+                <button type="button" id="toggle-license" class="px-4 py-2 text-sm font-medium border-t border-b border-r border-gray-600 focus:z-10 focus:ring-2 focus:ring-blue-500">
+                    License Review
+                </button>
+                <button type="button" id="toggle-group" class="px-4 py-2 text-sm font-medium border border-gray-600 rounded-r-lg focus:z-10 focus:ring-2 focus:ring-blue-500">
+                    Group Review
+                </button>
+            </div>
+        </div>
+        
+        <div id="security-view" style="display: none;">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg"><p class="text-gray-400 text-sm">Total Users</p><p id="total-users" class="text-2xl font-bold">0</p></div>
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg"><p class="text-gray-400 text-sm">MFA Not Enabled</p><p id="mfa-not-enabled" class="text-2xl font-bold text-red-500">0</p></div>
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg"><p class="text-gray-400 text-sm">Legacy MFA</p><p id="legacy-mfa" class="text-2xl font-bold text-yellow-500">0</p></div>
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg"><p class="text-gray-400 text-sm">Privileged Accounts</p><p id="privileged-accounts" class="text-2xl font-bold">0</p></div>
+            </div>
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th class="table-header text-left">User</th>
+                            <th class="table-header text-left">Status</th>
+                            <th class="table-header text-left">MFA</th>
+                            <th class="table-header text-left">Role(s)</th>
+                            <th class="table-header text-left">Flags</th>
+                            <th class="table-header text-center">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table"></tbody>
+                </table>
+                <div id="loading" class="text-center p-8">Loading data...</div>
+            </div>
+        </div>
+
+        <div id="ca-view" style="display: none;">
+             <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th class="table-header text-left">Policy Name</th>
+                            <th class="table-header text-left">State</th>
+                            <th class="table-header text-left">Assignments</th>
+                            <th class="table-header text-left">Grant Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ca-data-table"></tbody>
+                </table>
+                <div id="ca-loading" class="text-center p-8">Loading data...</div>
+            </div>
+        </div>
+
+        <div id="license-view" style="display: none;">
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+               <table class="min-w-full">
+                   <thead class="bg-gray-700">
+                       <tr>
+                           <th class="table-header text-left">User</th>
+                           <th class="table-header text-left">Status</th>
+                           <th class="table-header text-left">License</th>
+                           <th class="table-header text-left">Assigned By</th>
+                           <th class="table-header text-center">Exchange Mailbox</th>
+                       </tr>
+                   </thead>
+                   <tbody id="license-data-table"></tbody>
+               </table>
+               <div id="license-loading" class="text-center p-8">Loading data...</div>
+           </div>
+        </div>
+
+        <div id="group-view" style="display: none;">
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+               <table class="min-w-full">
+                   <thead class="bg-gray-700">
+                       <tr>
+                           <th class="table-header text-left">Group Name</th>
+                           <th class="table-header text-left">Type</th>
+                           <th class="table-header text-left">Owners</th>
+                           <th class="table-header text-left">Members</th>
+                           <th class="table-header text-center">Member Count</th>
+                       </tr>
+                   </thead>
+                   <tbody id="group-data-table"></tbody>
+               </table>
+               <div id="group-loading" class="text-center p-8">Loading data...</div>
+           </div>
+        </div>
+
+        <footer class="text-center text-gray-500 mt-6 text-sm">
+            <p>AetherCred Reporting Tool | Developed by Harry Shelton | July 2025</p>
+        </footer>
+    </div>
+
+    <script src="./AetherCred-Data.js"></script>
+    <script src="./AetherCred-CA-Data.js"></script>
+    <script src="./AetherCred-License-Data.js"></script>
+    <script src="./AetherCred-Group-Data.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // State and Element Selectors
+        let currentView = 'security';
+        
+        // Views and Loaders
+        const securityView = document.getElementById('security-view');
+        const caView = document.getElementById('ca-view');
+        const licenseView = document.getElementById('license-view');
+        const groupView = document.getElementById('group-view');
+        const securityLoadingDiv = document.getElementById('loading');
+        const caLoadingDiv = document.getElementById('ca-loading');
+        const licenseLoadingDiv = document.getElementById('license-loading');
+        const groupLoadingDiv = document.getElementById('group-loading');
+        
+        // Toggles
+        const toggleSecurityBtn = document.getElementById('toggle-security');
+        const toggleCaBtn = document.getElementById('toggle-ca');
+        const toggleLicenseBtn = document.getElementById('toggle-license');
+        const toggleGroupBtn = document.getElementById('toggle-group');
+        
+        // Tables
+        const securityTableBody = document.getElementById('data-table');
+        const caTableBody = document.getElementById('ca-data-table');
+        const licenseTableBody = document.getElementById('license-data-table');
+        const groupTableBody = document.getElementById('group-data-table');
+
+        // General UI
+        const searchBox = document.getElementById('search-box');
+        const mainTitle = document.getElementById('main-title');
+        const subTitle = document.getElementById('sub-title');
+        const lastUpdatedEl = document.getElementById('last-updated');
+
+        // Data Availability Checks
+        const securityDataExists = typeof aetherCredData !== 'undefined' && Array.isArray(aetherCredData);
+        const caDataExists = typeof aetherCredCAData !== 'undefined' && Array.isArray(aetherCredCAData) && typeof lastUpdatedCA !== 'undefined';
+        const licenseDataExists = typeof aetherCredLicenseData !== 'undefined' && Array.isArray(aetherCredLicenseData) && typeof lastUpdatedLicense !== 'undefined';
+        const groupDataExists = typeof aetherCredGroupData !== 'undefined' && Array.isArray(aetherCredGroupData) && typeof lastUpdatedGroup !== 'undefined';
+        
+        if (!securityDataExists) {
+            securityLoadingDiv.innerText = "Error: AetherCred-Data.js not found or empty.";
+            securityLoadingDiv.classList.add('text-red-500');
+        }
+        if (!caDataExists) {
+            caLoadingDiv.innerText = "Error: AetherCred-CA-Data.js not found or empty.";
+            caLoadingDiv.classList.add('text-red-500');
+        }
+        if (!licenseDataExists) {
+            licenseLoadingDiv.innerText = "Error: AetherCred-License-Data.js not found or empty.";
+            licenseLoadingDiv.classList.add('text-red-500');
+        }
+        if (!groupDataExists) {
+            groupLoadingDiv.innerText = "Error: AetherCred-Group-Data.js not found or empty.";
+            groupLoadingDiv.classList.add('text-red-500');
+        }
+
+        // Helper Functions
+        const getScoreColor = (score) => {
+            if (score >= 80) return 'risk-low';
+            if (score >= 50) return 'risk-medium';
+            return 'risk-high';
+        };
+        const getMfaStatusColor = (status) => {
+            if (status === 'Modern MFA') return 'bg-green-600';
+            if (status === 'Legacy MFA') return 'bg-yellow-600';
+            return 'bg-red-600';
+        };
+        const getCaStateColor = (state) => {
+            if (state === 'enabled') return 'bg-green-700';
+            if (state === 'enabledForReportingButNotEnforced') return 'bg-yellow-600';
+            return 'bg-gray-600';
+        };
+        const formatCaState = (state) => {
+            if (state === 'enabled') return 'Enabled';
+            if (state === 'enabledForReportingButNotEnforced') return 'Report-Only';
+            return 'Disabled';
+        };
+
+        // Table Rendering Functions
+        const renderSecurityTable = (data) => {
+            securityTableBody.innerHTML = '';
+            if (!securityDataExists || data.length === 0) {
+                securityLoadingDiv.innerText = "No users found.";
+                securityLoadingDiv.style.display = 'block';
+                return;
+            }
+            securityLoadingDiv.style.display = 'none';
+            data.forEach(user => {
+                const row = `<tr>
+                    <td class="table-cell"><div class="font-semibold">${user.Name||'N/A'}</div><div class="text-sm text-gray-400">${user.UPN||'N/A'}</div></td>
+                    <td class="table-cell"><span class="tag ${user.Enabled?'bg-green-700':'bg-gray-600'}">${user.Enabled?'Enabled':'Disabled'}</span></td>
+                    <td class="table-cell"><div class="tag ${getMfaStatusColor(user.MFAStatus)}">${user.MFAStatus}</div><div class="text-xs text-gray-400 truncate" title="${user.MFAMethods}">${user.MFAMethods||'None'}</div></td>
+                    <td class="table-cell text-sm">${user.Role||'None'}</td>
+                    <td class="table-cell text-sm text-yellow-400">${user.Flags||'None'}</td>
+                    <td class="table-cell text-center"><div class="tag ${getScoreColor(user.Score)}">${user.Score}</div></td>
+                </tr>`;
+                securityTableBody.innerHTML += row;
+            });
+        };
+
+        const renderCaTable = (data) => {
+            caTableBody.innerHTML = '';
+            if (!caDataExists || data.length === 0) {
+                caLoadingDiv.innerText = "No Conditional Access policies found.";
+                caLoadingDiv.style.display = 'block';
+                return;
+            }
+            caLoadingDiv.style.display = 'none';
+            data.forEach(policy => {
+                const row = `<tr>
+                    <td class="table-cell font-semibold">${policy.PolicyName||'N/A'}</div></td>
+                    <td class="table-cell"><span class="tag ${getCaStateColor(policy.State)}">${formatCaState(policy.State)}</span></td>
+                    <td class="table-cell text-sm">${policy.UsersAndGroups||'Not Configured'}</td>
+                    <td class="table-cell text-sm">${policy.GrantControls||'Not Configured'}</td>
+                </tr>`;
+                caTableBody.innerHTML += row;
+            });
+        };
+
+        const renderLicenseTable = (data) => {
+            licenseTableBody.innerHTML = '';
+            if (!licenseDataExists || data.length === 0) {
+                licenseLoadingDiv.innerText = "No license data found.";
+                licenseLoadingDiv.style.display = 'block';
+                return;
+            }
+            licenseLoadingDiv.style.display = 'none';
+            data.forEach(user => {
+                const row = `<tr>
+                    <td class="table-cell"><div class="font-semibold">${user.DisplayName||'N/A'}</div><div class="text-sm text-gray-400">${user.UPN||'N/A'}</div></td>
+                    <td class="table-cell"><span class="tag ${user.AccountEnabled?'bg-green-700':'bg-gray-600'}">${user.AccountEnabled?'Enabled':'Disabled'}</span></td>
+                    <td class="table-cell text-sm">${user.License||'None'}</td>
+                    <td class="table-cell text-sm">${user.AssignedBy||'N/A'}</td>
+                    <td class="table-cell text-center text-xl">${user.ExchangeMailbox||'❔'}</td>
+                </tr>`;
+                licenseTableBody.innerHTML += row;
+            });
+        };
+        
+        const renderGroupTable = (data) => {
+            groupTableBody.innerHTML = '';
+            if (!groupDataExists || data.length === 0) {
+                groupLoadingDiv.innerText = "No group data found.";
+                groupLoadingDiv.style.display = 'block';
+                return;
+            }
+            groupLoadingDiv.style.display = 'none';
+            data.forEach(group => {
+                const ownersHtml = Array.isArray(group.GroupOwners) ? group.GroupOwners.join('<br>') : (group.GroupOwners || 'N/A');
+                const membersHtml = Array.isArray(group.GroupMembers) ? group.GroupMembers.join('<br>') : (group.GroupMembers || 'N/A');
+
+                const row = `<tr>
+                    <td class="table-cell"><div class="font-semibold">${group.GroupName||'N/A'}</div><div class="text-sm text-gray-400">${group.EmailAddress||'No Email'}</div></td>
+                    <td class="table-cell text-sm">${group.GroupType||'N/A'}</td>
+                    <td class="table-cell text-xs">${ownersHtml}</td>
+                    <td class="table-cell text-xs">${membersHtml}</td>
+                    <td class="table-cell text-center font-bold">${group.MemberCount}</td>
+                </tr>`;
+                groupTableBody.innerHTML += row;
+            });
+        };
+
+        const updateSummary = (data) => {
+            if (!securityDataExists) return;
+            document.getElementById('total-users').innerText = data.length;
+            document.getElementById('mfa-not-enabled').innerText = data.filter(u => u.MFAStatus === 'Not Enabled').length;
+            document.getElementById('legacy-mfa').innerText = data.filter(u => u.MFAStatus === 'Legacy MFA').length;
+            document.getElementById('privileged-accounts').innerText = data.filter(u => u.Role !== 'None').length;
+        };
+
+        const switchView = (view) => {
+            currentView = view;
+            searchBox.value = '';
+
+            const allViews = { security: securityView, ca: caView, license: licenseView, group: groupView };
+            const allToggles = { security: toggleSecurityBtn, ca: toggleCaBtn, license: toggleLicenseBtn, group: toggleGroupBtn };
+            
+            for (const key in allViews) {
+                allViews[key].style.display = key === view ? 'block' : 'none';
+                allToggles[key].classList.toggle('toggle-active', key === view);
+                allToggles[key].classList.toggle('toggle-inactive', key !== view);
+            }
+
+            if (view === 'security') {
+                mainTitle.innerText = "AetherCred - User Security Report";
+                subTitle.innerText = "Entra ID Security & MFA Posture Report";
+                lastUpdatedEl.innerText = securityDataExists ? `Last updated: ${new Date(lastUpdated).toLocaleString('en-GB')}` : 'Data not loaded.';
+                searchBox.placeholder = "Search by name or UPN...";
+                if (securityDataExists) {
+                    renderSecurityTable(aetherCredData);
+                    updateSummary(aetherCredData);
+                }
+            } else if (view === 'ca') {
+                mainTitle.innerText = "AetherCred - Conditional Access Report";
+                subTitle.innerText = "Conditional Access Policy Analysis";
+                lastUpdatedEl.innerText = caDataExists ? `Last updated: ${new Date(lastUpdatedCA).toLocaleString('en-GB')}` : 'Data not loaded.';
+                searchBox.placeholder = "Search by policy name...";
+                if (caDataExists) {
+                    renderCaTable(aetherCredCAData);
+                }
+            } else if (view === 'license') {
+                mainTitle.innerText = "AetherCred - User License Review";
+                subTitle.innerText = "User License Assignment Report";
+                lastUpdatedEl.innerText = licenseDataExists ? `Last updated: ${new Date(lastUpdatedLicense).toLocaleString('en-GB')}` : 'Data not loaded.';
+                searchBox.placeholder = "Search by name, UPN, or license...";
+                if (licenseDataExists) {
+                    renderLicenseTable(aetherCredLicenseData);
+                }
+            } else if (view === 'group') {
+                mainTitle.innerText = "AetherCred - Group Review";
+                subTitle.innerText = "Tenant-Wide Group, Owner & Member Report";
+                lastUpdatedEl.innerText = groupDataExists ? `Last updated: ${new Date(lastUpdatedGroup).toLocaleString('en-GB')}` : 'Data not loaded.';
+                searchBox.placeholder = "Search by name, type, owner, or member...";
+                if (groupDataExists) {
+                    renderGroupTable(aetherCredGroupData);
+                }
+            }
+        };
+
+        searchBox.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            if (currentView === 'security' && securityDataExists) {
+                const filtered = aetherCredData.filter(u => (u.Name&&u.Name.toLowerCase().includes(searchTerm)) || (u.UPN&&u.UPN.toLowerCase().includes(searchTerm)));
+                renderSecurityTable(filtered);
+            } else if (currentView === 'ca' && caDataExists) {
+                const filtered = aetherCredCAData.filter(p => p.PolicyName&&p.PolicyName.toLowerCase().includes(searchTerm));
+                renderCaTable(filtered);
+            } else if (currentView === 'license' && licenseDataExists) {
+                const filtered = aetherCredLicenseData.filter(u => (u.DisplayName&&u.DisplayName.toLowerCase().includes(searchTerm)) || (u.UPN&&u.UPN.toLowerCase().includes(searchTerm)) || (u.License&&u.License.toLowerCase().includes(searchTerm)));
+                renderLicenseTable(filtered);
+            } else if (currentView === 'group' && groupDataExists) {
+                const filtered = aetherCredGroupData.filter(g => {
+                    const nameMatch = g.GroupName && g.GroupName.toLowerCase().includes(searchTerm);
+                    const typeMatch = g.GroupType && g.GroupType.toLowerCase().includes(searchTerm);
+                    const ownerMatch = Array.isArray(g.GroupOwners) && g.GroupOwners.some(owner => owner.toLowerCase().includes(searchTerm));
+                    const memberMatch = Array.isArray(g.GroupMembers) && g.GroupMembers.some(member => member.toLowerCase().includes(searchTerm));
+                    return nameMatch || typeMatch || ownerMatch || memberMatch;
+                });
+                renderGroupTable(filtered);
+            }
+        });
+        
+        toggleSecurityBtn.addEventListener('click', () => switchView('security'));
+        toggleCaBtn.addEventListener('click', () => switchView('ca'));
+        toggleLicenseBtn.addEventListener('click', () => switchView('license'));
+        toggleGroupBtn.addEventListener('click', () => switchView('group'));
+
+        document.getElementById('pdf-button').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            let reportTitle, tableHead, tableBody, columnStyles;
+
+            const logoImg = document.getElementById('logo-for-pdf');
+            if (logoImg && logoImg.src.startsWith('data:image') && logoImg.naturalWidth > 0) {
+                const logoWidthMM = 27; // Desired width of the logo in the PDF in mm (edit me if scaling is off)
+                const aspectRatio = logoImg.naturalHeight / logoImg.naturalWidth;
+                const logoHeightMM = logoWidthMM * aspectRatio; // Calculate height to maintain aspect ratio, automatic height adjustment
+
+                doc.addImage(logoImg.src, 'PNG', 15, 8, logoWidthMM, logoHeightMM);
+            }
+
+            // Report titles and generation date
+            doc.setFontSize(18);
+            doc.setTextColor(40);
+            doc.text(`AetherCred Report`, 282, 15, { align: 'right' });
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Generated on: ${new Date().toLocaleString('en-GB')}`, 282, 22, { align: 'right' });
+            
+            if (currentView === 'security' && securityDataExists) {
+                reportTitle = "User Security Report";
+                tableHead = [['User', 'Status', 'MFA Status', 'MFA Methods', 'Role(s)', 'Flags', 'Score']];
+                tableBody = aetherCredData.map(u => [`${u.Name}\n${u.UPN}`, u.Enabled ? 'Enabled' : 'Disabled', u.MFAStatus, u.MFAMethods, u.Role, u.Flags, u.Score]);
+                columnStyles = { 5: { cellWidth: 45 }, 6: { halign: 'center' } };
+            } else if (currentView === 'ca' && caDataExists) {
+                reportTitle = "Conditional Access Report";
+                tableHead = [['Policy Name', 'State', 'Assignments', 'Grant Controls']];
+                tableBody = aetherCredCAData.map(p => [p.PolicyName, formatCaState(p.State), p.UsersAndGroups, p.GrantControls]);
+                columnStyles = { 0: { cellWidth: 60 }, 2: { cellWidth: 60 }, 3: { cellWidth: 60 }};
+            } else if (currentView === 'license' && licenseDataExists) {
+                reportTitle = "User License Report";
+                tableHead = [['User', 'Status', 'License', 'Assigned By', 'Mailbox']];
+                tableBody = aetherCredLicenseData.map(u => [`${u.DisplayName}\n${u.UPN}`, u.AccountEnabled ? 'Enabled' : 'Disabled', u.License, u.AssignedBy, u.ExchangeMailbox]);
+                columnStyles = { 0: { cellWidth: 60 }, 4: { halign: 'center' } };
+            } else if (currentView === 'group' && groupDataExists) {
+                reportTitle = "Group Report";
+                tableHead = [['Group Name', 'Type', 'Owners', 'Members', 'Count']];
+                tableBody = aetherCredGroupData.map(g => [
+                    `${g.GroupName}\n${g.EmailAddress || ''}`, 
+                    g.GroupType, 
+                    Array.isArray(g.GroupOwners) ? g.GroupOwners.join('\n') : (g.GroupOwners || ''),
+                    Array.isArray(g.GroupMembers) ? g.GroupMembers.join('\n') : (g.GroupMembers || ''),
+                    g.MemberCount
+                ]);
+                columnStyles = { 0: { cellWidth: 50 }, 2: { cellWidth: 60 }, 3: { cellWidth: 60 }, 4: { halign: 'center' } };
+            } else {
+                alert("No data available to generate a PDF for this view.");
+                return;
+            }
+
+            // Add the specific report title below the main header
+            doc.setFontSize(14);
+            doc.text(reportTitle, 145, 32, { align: 'center' });
+            
+            doc.autoTable({
+                head: tableHead,
+                body: tableBody,
+                startY: 40, // Lowered the table to make space for the full header
+                theme: 'grid',
+                headStyles: { fillColor: [31, 41, 55] },
+                styles: { fontSize: 8, cellPadding: 1.5, overflow: 'linebreak' },
+                columnStyles: columnStyles,
+                didDrawCell: (data) => {
+                    if (currentView === 'security' && data.column.index === 6 && data.cell.section === 'body') {
+                        const score = Number(data.cell.raw);
+                        let color = [22, 101, 52]; 
+                        if (score < 50) color = [153, 27, 27]; 
+                        else if (score < 80) color = [154, 52, 18]; 
+                        doc.setFillColor(...color);
+                    }
+                }
+            });
+            
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width / 2, 205, { align: 'center' });
+            }
+            doc.save(`AetherCred-${currentView.toUpperCase()}-Report-${new Date().toISOString().slice(0,10)}.pdf`);
+        });
+
+        // Initial Load
+        switchView('security');
+    });
+    </script>
+</body>
+</html>
