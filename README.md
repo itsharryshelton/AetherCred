@@ -10,7 +10,8 @@ For detailed guidance, best practices, and remediation advice, visit [aethercred
 
 **AetherCred** is a PowerShell and HTML-based toolkit that provides a clear, actionable overview of your Microsoft Entra ID security posture. It collects and visualises key user, licensing, and policy data in an intuitive, shareable dashboard for both technical and non-technical stakeholders.
 
-<img width="1772" height="1011" alt="AetherCred Dashboard Screenshot" src="https://github.com/user-attachments/assets/a64139dd-b317-485c-9ffa-80cec247b5cb" />
+<img width="1691" height="763" alt="chrome_d4QwRPkpmT" src="https://github.com/user-attachments/assets/4cc0fb7e-3ecd-4d13-b11d-17eacd52bda6" />
+
 
 ---
 
@@ -44,28 +45,54 @@ For detailed guidance, best practices, and remediation advice, visit [aethercred
 ## Requirements
 
 - **PowerShell 5.1+**  
-  (Note: PowerShell 7 is not fully supported.)
-- **Microsoft Graph PowerShell SDK**  
+- **Microsoft Graph PowerShell SDK and Beta Module (Beta Required for the Security Review Section)**  
   Install via:
   ```powershell
   Install-Module Microsoft.Graph -Scope AllUsers
+  Install-Module Microsoft.Graph.Beta -Scope CurrentUser
+  
 
 
 ## Getting Started
 
 1. **Download Files**
-   - `AetherCred-Core.ps1` (core script)
-   - `AetherCred-Report.html` (dashboard template)
+   - `AetherCred-Core.ps1` (Core Script)
+   - `AetherCred-Report.html` (Report Template)
+   - `AetherCred-CreateApplication.ps1` (Application Creation Script)
+   - `AetherCred.config` (App Information Storage)
+   - `Modules/Run-ConditionalAccessReview.ps1` (Conditional Access Module)
+   - `Modules/Run-LicensingReview.ps1` (License Review Module)
+   - `Modules/Run-SecurityReview.ps1` (Security Review Module)
+
 
 2. **Set Up Modules**
    - Create a folder named `Modules` in the same directory as `AetherCred-Core.ps1`.
    - Place supporting module scripts inside (e.g., `Run-SecurityReview.ps1`, `Run-ConditionalAccessReview.ps1`, etc.) - Download from the Modules folder if you haven't already
 
-3. **Run the Script**
+3. **Create the Application**
+   Open PowerShell and execute:
+   ```powershell
+   .\AetherCred-CreateApplication.ps1
+
+  This will prompt you to use a user with the create permissions to create the App Registration, you must still grant admin consent and make the secret manually
+  <img width="1404" height="875" alt="firefox_xJa6PY6Y6F" src="https://github.com/user-attachments/assets/05542528-aa1f-43ff-b1bb-a33d6a2e954c" />
+  <img width="2284" height="1239" alt="firefox_MtyMgRUrEc" src="https://github.com/user-attachments/assets/e8df5945-7caf-40c8-b4a1-efd6054c3668" />
+
+
+   
+4. **Fill the AetherCred.config**
+   Fill out the AetherCred.config with the Tenant ID, Application ID and Secret Value from the App Registration
+
+   <img width="1129" height="346" alt="firefox_qEJSXPLY9t" src="https://github.com/user-attachments/assets/2c2250e5-8189-4f6a-9935-c584af11b30d" />
+   <img width="876" height="476" alt="firefox_DhvaOsyQzq" src="https://github.com/user-attachments/assets/e678abe6-4dd6-4ff2-b052-9f7af39a87fa" />
+
+
+   
+6. **Run the Script**
    Open PowerShell 5.1 and execute:
    ```powershell
    .\AetherCred-Core.ps1
-
+  
 
 ---
 
@@ -76,9 +103,8 @@ Each review (security, licensing, conditional access) is handled by a separate `
 
 ### 🔐 Graph API Connection
 - Searches for an existing App Registration named `AetherCred`
-- Automatically registers the app and assigns required permissions (e.g. `User.Read.All`, `Policy.Read.All`)
+- Automatically registers the app and assigns required permissions (e.g. `User.Read.All`, `Policy.Read.All` etc)
 - Uploads a custom logo and sets redirect URIs
-- Establishes a client credentials connection to Microsoft Graph via the app
 
 ### 🧠 Interactive Review Selection
 After connection, you are presented with a menu to:
@@ -144,4 +170,5 @@ AetherCred is built with security and privacy in mind. Your tenant data is never
 
 By design, AetherCred operates as a **self-contained and auditable** security reporting tool, suitable for both internal audits and external compliance reporting workflows.
 
+**Do NOT hardcode your Tenant ID, Application ID and Secret Value into your script! That is not best practice, I've left the .config file to be in the same location for simple open source reference, I'd recommend storing these secretly better!**
 
