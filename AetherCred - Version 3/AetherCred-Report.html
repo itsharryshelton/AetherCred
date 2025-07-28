@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherCred Dashboard</title>
+    <link rel="icon" href="https://images.aethercred.co.uk/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .table-cell { padding: 8px 12px; border-bottom: 1px solid #374151; }
+        .table-header { padding: 12px; background-color: #1f2937; color: #d1d5db; font-weight: 600; }
+        .risk-high { background-color: #991b1b; color: white; }
+        .risk-medium { background-color: #9a3412; color: white; }
+        .risk-low { background-color: #166534; color: white; }
+        .risk-none { background-color: #374151; color: white; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.8rem; font-weight: 500; margin: 2px; }
+        .toggle-active { background-color: #1d4ed8; color: white; }
+        .toggle-inactive { background-color: #374151; color: #9ca3af; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-gray-200">
+            <!-- Navigation Bar -->
+    <nav x-data="{ open: false }" class="bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="https://aethercred.co.uk/">
+                        <img class="h-8 w-auto" src="https://images.aethercred.co.uk/AetherCredLogoCloud.png" alt="AetherCred Logo" onerror="this.onerror=null;this.src='https://placehold.co/130x32/1f2937/ffffff?text=AetherCred';">
+                    </a>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="https://aethercred.co.uk/practices" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" >Best Practices</a>
+                        <a href="https://aethercred.co.uk/remediation" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Remediation Guides</a>
+                        <a href="https://aethercred.co.uk/how-to-use" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">How to Use</a>
+                        <a href="https://github.com/itsharryshelton/AetherCred" target="_blank" class="text-gray-300 hover:text-white flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                           GitHub
+                        </a>
+                    </div>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button @click="open = !open" type="button" class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg :class="{'hidden': open, 'block': !open }" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg :class="{'block': open, 'hidden': !open }" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div x-show="open" @click.away="open = false" class="md:hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="https://aethercred.co.uk/practices" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Best Practices</a>
+                <a href="https://aethercred.co.uk/remediation" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Remediation Guides</a>
+                <a href="https://aethercred.co.uk/how-to-use" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">How to Use</a>
+                <a href="https://github.com/itsharryshelton/AetherCred" target="_blank" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8">
+
+    <img id="logo-for-pdf" src="dII=" style="display:none;" alt="Company Logo for PDF" />
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div>
+                <h1 id="main-title" class="text-4xl font-bold text-white">AetherCred Dashboard</h1>
+                <p id="sub-title" class="text-gray-400 mt-1">Entra ID Security & MFA Posture Report</p>
+                <p id="last-updated" class="text-sm text-gray-500 mt-2">Last updated: Loading...</p>
+            </div>
+            <div class="flex items-center space-x-2 mt-4 md:mt-0">
+                <input type="text" id="search-box" placeholder="Search by name or UPN..." class="bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <button id="pdf-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                    Download PDF Report
+                </button>
+            </div>
+        </header>
+
+        <div class="mb-4">
+            <div class="inline-flex rounded-md shadow-sm" role="group">
+                <button type="button" id="toggle-security" class="px-4 py-2 text-sm font-medium border border-gray-600 rounded-l-lg focus:z-10 focus:ring-2 focus:ring-blue-500">
+                    Security Report
+                </button>
+                <button type="button" id="toggle-ca" class="px-4 py-2 text-sm font-medium border-t border-b border-gray-600 focus:z-10 focus:ring-2 focus:ring-blue-500">
+                    Conditional Access
+                </button>
+                <button type="button" id="toggle-license" class="px-4 py-2 text-sm font-medium border border-gray-600 rounded-r-lg focus:z-10 focus:ring-2 focus:ring-blue-500">
+                    License Review
+                </button>
+            </div>
+        </div>
+        
+        <div id="security-view" style="display: none;">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg"><p class="text-gray-400 text-sm">Total Users</p><p id="total-users" class="text-2xl font-bold">0</p></div>
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg"><p class="text-gray-400 text-sm">MFA Not Enabled</p><p id="mfa-not-enabled" class="text-2xl font-bold text-red-500">0</p></div>
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg"><p class="text-gray-400 text-sm">Legacy MFA</p><p id="legacy-mfa" class="text-2xl font-bold text-yellow-500">0</p></div>
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg"><p class="text-gray-400 text-sm">Privileged Accounts</p><p id="privileged-accounts" class="text-2xl font-bold">0</p></div>
+            </div>
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th class="table-header text-left">User</th>
+                            <th class="table-header text-left">Status</th>
+                            <th class="table-header text-left">MFA</th>
+                            <th class="table-header text-left">Role(s)</th>
+                            <th class="table-header text-left">Flags</th>
+                            <th class="table-header text-center">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table"></tbody>
+                </table>
+                <div id="loading" class="text-center p-8">Loading data...</div>
+            </div>
+        </div>
+
+        <div id="ca-view" style="display: none;">
+             <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th class="table-header text-left">Policy Name</th>
+                            <th class="table-header text-left">State</th>
+                            <th class="table-header text-left">Assignments</th>
+                            <th class="table-header text-left">Grant Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ca-data-table"></tbody>
+                </table>
+                <div id="ca-loading" class="text-center p-8">Loading data...</div>
+            </div>
+        </div>
+
+        <div id="license-view" style="display: none;">
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+               <table class="min-w-full">
+                   <thead class="bg-gray-700">
+                       <tr>
+                           <th class="table-header text-left">User</th>
+                           <th class="table-header text-left">Status</th>
+                           <th class="table-header text-left">License</th>
+                           <th class="table-header text-left">Assigned By</th>
+                           <th class="table-header text-center">Exchange Mailbox</th>
+                       </tr>
+                   </thead>
+                   <tbody id="license-data-table"></tbody>
+               </table>
+               <div id="license-loading" class="text-center p-8">Loading data...</div>
+           </div>
+       </div>
+
+        <footer class="text-center text-gray-500 mt-6 text-sm">
+            <p>AetherCred Reporting Tool | Developed by Harry Shelton | July 2025</p>
+        </footer>
+    </div>
+
+    <script src="./AetherCred-Data.js"></script>
+    <script src="./AetherCred-CA-Data.js"></script>
+    <script src="./AetherCred-License-Data.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- State and Element Selectors ---
+        let currentView = 'security';
+        
+        // Views and Loaders
+        const securityView = document.getElementById('security-view');
+        const caView = document.getElementById('ca-view');
+        const licenseView = document.getElementById('license-view');
+        const securityLoadingDiv = document.getElementById('loading');
+        const caLoadingDiv = document.getElementById('ca-loading');
+        const licenseLoadingDiv = document.getElementById('license-loading');
+        
+        // Toggles
+        const toggleSecurityBtn = document.getElementById('toggle-security');
+        const toggleCaBtn = document.getElementById('toggle-ca');
+        const toggleLicenseBtn = document.getElementById('toggle-license');
+        
+        // Tables
+        const securityTableBody = document.getElementById('data-table');
+        const caTableBody = document.getElementById('ca-data-table');
+        const licenseTableBody = document.getElementById('license-data-table');
+
+        // General UI
+        const searchBox = document.getElementById('search-box');
+        const mainTitle = document.getElementById('main-title');
+        const subTitle = document.getElementById('sub-title');
+        const lastUpdatedEl = document.getElementById('last-updated');
+
+        // --- Data Availability Checks ---
+        const securityDataExists = typeof aetherCredData !== 'undefined' && Array.isArray(aetherCredData);
+        const caDataExists = typeof aetherCredCAData !== 'undefined' && Array.isArray(aetherCredCAData) && typeof lastUpdatedCA !== 'undefined';
+        const licenseDataExists = typeof aetherCredLicenseData !== 'undefined' && Array.isArray(aetherCredLicenseData) && typeof lastUpdatedLicense !== 'undefined';
+        
+        if (!securityDataExists) {
+            securityLoadingDiv.innerText = "Error: AetherCred-Data.js not found or empty.";
+            securityLoadingDiv.classList.add('text-red-500');
+        }
+        if (!caDataExists) {
+            caLoadingDiv.innerText = "Error: AetherCred-CA-Data.js not found or empty.";
+            caLoadingDiv.classList.add('text-red-500');
+        }
+        if (!licenseDataExists) {
+            licenseLoadingDiv.innerText = "Error: AetherCred-License-Data.js not found or empty.";
+            licenseLoadingDiv.classList.add('text-red-500');
+        }
+
+        // --- Helper Functions ---
+        const getScoreColor = (score) => {
+            if (score >= 80) return 'risk-low';
+            if (score >= 50) return 'risk-medium';
+            return 'risk-high';
+        };
+        const getMfaStatusColor = (status) => {
+            if (status === 'Modern MFA') return 'bg-green-600';
+            if (status === 'Legacy MFA') return 'bg-yellow-600';
+            return 'bg-red-600';
+        };
+        const getCaStateColor = (state) => {
+            if (state === 'enabled') return 'bg-green-700';
+            if (state === 'enabledForReportingButNotEnforced') return 'bg-yellow-600';
+            return 'bg-gray-600';
+        };
+        const formatCaState = (state) => {
+            if (state === 'enabled') return 'Enabled';
+            if (state === 'enabledForReportingButNotEnforced') return 'Report-Only';
+            return 'Disabled';
+        };
+
+        // --- Table Rendering Functions ---
+        const renderSecurityTable = (data) => {
+            securityTableBody.innerHTML = '';
+            if (!securityDataExists || data.length === 0) {
+                securityLoadingDiv.innerText = "No users found.";
+                securityLoadingDiv.style.display = 'block';
+                return;
+            }
+            securityLoadingDiv.style.display = 'none';
+            data.forEach(user => {
+                const row = `<tr>
+                    <td class="table-cell"><div class="font-semibold">${user.Name||'N/A'}</div><div class="text-sm text-gray-400">${user.UPN||'N/A'}</div></td>
+                    <td class="table-cell"><span class="tag ${user.Enabled?'bg-green-700':'bg-gray-600'}">${user.Enabled?'Enabled':'Disabled'}</span></td>
+                    <td class="table-cell"><div class="tag ${getMfaStatusColor(user.MFAStatus)}">${user.MFAStatus}</div><div class="text-xs text-gray-400 truncate" title="${user.MFAMethods}">${user.MFAMethods||'None'}</div></td>
+                    <td class="table-cell text-sm">${user.Role||'None'}</td>
+                    <td class="table-cell text-sm text-yellow-400">${user.Flags||'None'}</td>
+                    <td class="table-cell text-center"><div class="tag ${getScoreColor(user.Score)}">${user.Score}</div></td>
+                </tr>`;
+                securityTableBody.innerHTML += row;
+            });
+        };
+
+        const renderCaTable = (data) => {
+            caTableBody.innerHTML = '';
+            if (!caDataExists || data.length === 0) {
+                caLoadingDiv.innerText = "No Conditional Access policies found.";
+                caLoadingDiv.style.display = 'block';
+                return;
+            }
+            caLoadingDiv.style.display = 'none';
+            data.forEach(policy => {
+                const row = `<tr>
+                    <td class="table-cell font-semibold">${policy.PolicyName||'N/A'}</div></td>
+                    <td class="table-cell"><span class="tag ${getCaStateColor(policy.State)}">${formatCaState(policy.State)}</span></td>
+                    <td class="table-cell text-sm">${policy.UsersAndGroups||'Not Configured'}</td>
+                    <td class="table-cell text-sm">${policy.GrantControls||'Not Configured'}</td>
+                </tr>`;
+                caTableBody.innerHTML += row;
+            });
+        };
+
+        const renderLicenseTable = (data) => {
+            licenseTableBody.innerHTML = '';
+            if (!licenseDataExists || data.length === 0) {
+                licenseLoadingDiv.innerText = "No license data found.";
+                licenseLoadingDiv.style.display = 'block';
+                return;
+            }
+            licenseLoadingDiv.style.display = 'none';
+            data.forEach(user => {
+                const row = `<tr>
+                    <td class="table-cell"><div class="font-semibold">${user.DisplayName||'N/A'}</div><div class="text-sm text-gray-400">${user.UPN||'N/A'}</div></td>
+                    <td class="table-cell"><span class="tag ${user.AccountEnabled?'bg-green-700':'bg-gray-600'}">${user.AccountEnabled?'Enabled':'Disabled'}</span></td>
+                    <td class="table-cell text-sm">${user.License||'None'}</td>
+                    <td class="table-cell text-sm">${user.AssignedBy||'N/A'}</td>
+                    <td class="table-cell text-center text-xl">${user.ExchangeMailbox||'❔'}</td>
+                </tr>`;
+                licenseTableBody.innerHTML += row;
+            });
+        };
+
+        const updateSummary = (data) => {
+            if (!securityDataExists) return;
+            document.getElementById('total-users').innerText = data.length;
+            document.getElementById('mfa-not-enabled').innerText = data.filter(u => u.MFAStatus === 'Not Enabled').length;
+            document.getElementById('legacy-mfa').innerText = data.filter(u => u.MFAStatus === 'Legacy MFA').length;
+            document.getElementById('privileged-accounts').innerText = data.filter(u => u.Role !== 'None').length;
+        };
+
+        const switchView = (view) => {
+            currentView = view;
+            searchBox.value = '';
+
+            const allViews = { security: securityView, ca: caView, license: licenseView };
+            const allToggles = { security: toggleSecurityBtn, ca: toggleCaBtn, license: toggleLicenseBtn };
+            
+            for (const key in allViews) {
+                allViews[key].style.display = key === view ? 'block' : 'none';
+                allToggles[key].classList.toggle('toggle-active', key === view);
+                allToggles[key].classList.toggle('toggle-inactive', key !== view);
+            }
+
+            if (view === 'security') {
+                mainTitle.innerText = "AetherCred - User Security Report";
+                subTitle.innerText = "Entra ID Security & MFA Posture Report";
+                lastUpdatedEl.innerText = securityDataExists ? `Last updated: ${new Date(lastUpdated).toLocaleString('en-GB')}` : 'Data not loaded.';
+                searchBox.placeholder = "Search by name or UPN...";
+                if (securityDataExists) {
+                    renderSecurityTable(aetherCredData);
+                    updateSummary(aetherCredData);
+                }
+            } else if (view === 'ca') {
+                mainTitle.innerText = "AetherCred - Conditional Access Report";
+                subTitle.innerText = "Conditional Access Policy Analysis";
+                lastUpdatedEl.innerText = caDataExists ? `Last updated: ${new Date(lastUpdatedCA).toLocaleString('en-GB')}` : 'Data not loaded.';
+                searchBox.placeholder = "Search by policy name...";
+                if (caDataExists) {
+                    renderCaTable(aetherCredCAData);
+                }
+            } else if (view === 'license') {
+                mainTitle.innerText = "AetherCred - User License Review";
+                subTitle.innerText = "User License Assignment Report";
+                lastUpdatedEl.innerText = licenseDataExists ? `Last updated: ${new Date(lastUpdatedLicense).toLocaleString('en-GB')}` : 'Data not loaded.';
+                searchBox.placeholder = "Search by name, UPN, or license...";
+                if (licenseDataExists) {
+                    renderLicenseTable(aetherCredLicenseData);
+                }
+            }
+        };
+
+        searchBox.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            if (currentView === 'security' && securityDataExists) {
+                const filtered = aetherCredData.filter(u => (u.Name&&u.Name.toLowerCase().includes(searchTerm)) || (u.UPN&&u.UPN.toLowerCase().includes(searchTerm)));
+                renderSecurityTable(filtered);
+            } else if (currentView === 'ca' && caDataExists) {
+                const filtered = aetherCredCAData.filter(p => p.PolicyName&&p.PolicyName.toLowerCase().includes(searchTerm));
+                renderCaTable(filtered);
+            } else if (currentView === 'license' && licenseDataExists) {
+                const filtered = aetherCredLicenseData.filter(u => (u.DisplayName&&u.DisplayName.toLowerCase().includes(searchTerm)) || (u.UPN&&u.UPN.toLowerCase().includes(searchTerm)) || (u.License&&u.License.toLowerCase().includes(searchTerm)));
+                renderLicenseTable(filtered);
+            }
+        });
+        
+        toggleSecurityBtn.addEventListener('click', () => switchView('security'));
+        toggleCaBtn.addEventListener('click', () => switchView('ca'));
+        toggleLicenseBtn.addEventListener('click', () => switchView('license'));
+
+        document.getElementById('pdf-button').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const logoImg = document.getElementById('logo-for-pdf');
+            let reportTitle, tableHead, tableBody, columnStyles;
+
+            if (logoImg && logoImg.src) {
+                try { doc.addImage(logoImg, 'PNG', 15, 10, 20, 20); } catch (e) { console.error("Could not add logo to PDF.", e); }
+            }
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Report generated on: ${new Date().toLocaleString('en-GB')}`, 38, 26);
+            
+            if (currentView === 'security' && securityDataExists) {
+                reportTitle = "AetherCred Security Report";
+                tableHead = [['User', 'Status', 'MFA Status', 'MFA Methods', 'Role(s)', 'Flags', 'Score']];
+                tableBody = aetherCredData.map(u => [`${u.Name}\n${u.UPN}`, u.Enabled ? 'Enabled' : 'Disabled', u.MFAStatus, u.MFAMethods, u.Role, u.Flags, u.Score]);
+                columnStyles = { 5: { cellWidth: 45 }, 6: { halign: 'center' } };
+            } else if (currentView === 'ca' && caDataExists) {
+                reportTitle = "AetherCred Conditional Access Report";
+                tableHead = [['Policy Name', 'State', 'Assignments', 'Grant Controls']];
+                tableBody = aetherCredCAData.map(p => [p.PolicyName, formatCaState(p.State), p.UsersAndGroups, p.GrantControls]);
+                columnStyles = { 0: { cellWidth: 60 }, 2: { cellWidth: 60 }, 3: { cellWidth: 60 }};
+            } else if (currentView === 'license' && licenseDataExists) {
+                reportTitle = "AetherCred License Report";
+                tableHead = [['User', 'Status', 'License', 'Assigned By', 'Mailbox',"EMS P1","EMS P2"]];
+                tableBody = aetherCredLicenseData.map(u => [`${u.DisplayName}\n${u.UPN}`, u.AccountEnabled ? 'Enabled' : 'Disabled', u.License, u.AssignedBy, u.ExchangeMailbox]);
+                columnStyles = { 0: { cellWidth: 60 }, 4: { halign: 'center' } };
+            } else {
+                alert("No data available to generate a PDF for this view.");
+                return;
+            }
+
+            doc.setFontSize(22);
+            doc.setTextColor(40);
+            doc.text(reportTitle, 38, 20);
+            
+            doc.autoTable({
+                head: tableHead,
+                body: tableBody,
+                startY: 35,
+                theme: 'grid',
+                headStyles: { fillColor: [31, 41, 55] },
+                styles: { fontSize: 8, cellPadding: 1.5 },
+                columnStyles: columnStyles,
+                didDrawCell: (data) => {
+                    if (currentView === 'security' && data.column.index === 6 && data.cell.section === 'body') {
+                        const score = Number(data.cell.raw);
+                        let color = [22, 101, 52];
+                        if (score < 50) color = [153, 27, 27];
+                        else if (score < 80) color = [154, 52, 18];
+                        doc.setFillColor(...color);
+                    }
+                }
+            });
+            
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width / 2, 205, { align: 'center' });
+            }
+            doc.save(`AetherCred-${currentView.toUpperCase()}-Report-${new Date().toISOString().slice(0,10)}.pdf`);
+        });
+
+        // --- Initial Load ---
+        switchView('security');
+    });
+    </script>
+</body>
+</html>
