@@ -10,7 +10,7 @@ For detailed guidance, best practices, and remediation advice, visit [aethercred
 
 **AetherCred** is a PowerShell and HTML-based toolkit that provides a clear, actionable overview of your Microsoft Entra ID security posture. It collects and visualises key user, licensing, and policy data in an intuitive, shareable dashboard for both technical and non-technical stakeholders.
 
-**Latest Version:** 3.1
+**Latest Version:** 4.0
 
 <img width="1797" height="778" alt="image" src="https://github.com/user-attachments/assets/9dbae07c-02be-4a91-8c09-13ee087c7ade" />
 
@@ -19,35 +19,47 @@ For detailed guidance, best practices, and remediation advice, visit [aethercred
 
 ## Features
 
-- **🔍 Comprehensive User Analysis**  
-  Reports on user status, last sign-in, licence assignment, password expiry settings, and creation date.
+- **🔍 Comprehensive User Analysis**  
+  Reports on user status, last sign-in, licence assignment, password expiry settings, and creation date for all non-guest, non-shared mailbox users.
 
-- **🛡 MFA Classification**  
+- **🛡 MFA Classification**  
   Distinguishes between Modern (Passwordless, FIDO2, Authenticator App) and Legacy (SMS, Voice, TOTP) MFA methods.
 
-- **📊 Security Scoring**  
+- **📊 Security Scoring**  
   Assigns a user-level score (0–100) based on key risk factors including MFA, privileged roles, and password policies.
 
-- **🚩 Risk Flagging**  
+- **🚩 Risk Flagging**  
   Flags risky states like "MFA Not Registered", "Password Expiry Enabled", and "Never Signed In".
 
-- **🔐 Privileged Role Identification**  
+- **🔐 Privileged Role Identification**  
   Highlights users in critical administrative roles (e.g. Global Admin, Security Admin).
 
-- **📈 Conditional Access Review**  
+- **📈 Conditional Access Review**  
   Surfaces Conditional Access policies relevant to user security posture.
+  
+- **🏢 Service Principal Review**
+  Analyses Application and Service Principal permissions and app role assignments.
 
-- **📁 Report Exports**  
+- **👤 Guest User Review**
+  Provides a dedicated report on guest accounts, their MFA status, and activity.
+
+- **📫 Shared Mailbox Review**
+  Enumerates all shared mailboxes in the tenant.
+
+- **📧 Distribution List Review**
+  Reports on all distribution lists, including their creation date and email details.
+
+- **📁 Report Exports**  
   - HTML & JavaScript-based dashboard (offline, no server required)
-  - CSV output (`AetherCred-Data.csv`)
+  - CSV output to a `CSV-Export` folder
   - PDF generation via browser (fully client-side with jsPDF)
 
 ---
 
 ## Requirements
 
-- **PowerShell 5.1+**  
-- **Microsoft Graph PowerShell SDK and Beta Module (Beta Required for the Security Review Section)**  
+- **PowerShell 5.1+**  
+- **Microsoft Graph PowerShell SDK and Beta Module (Beta Required for the Security Review Section)**  
   Install via:
   ```powershell
   Install-Module Microsoft.Graph -Scope AllUsers
@@ -62,10 +74,7 @@ For detailed guidance, best practices, and remediation advice, visit [aethercred
    - `AetherCred-Report.html` (Report Template)
    - `AetherCred-CreateApplication.ps1` (Application Creation Script)
    - `AetherCred.config` (App Information Storage)
-   - `Modules/Run-ConditionalAccessReview.ps1` (Conditional Access Module)
-   - `Modules/Run-LicensingReview.ps1` (License Review Module)
-   - `Modules/Run-SecurityReview.ps1` (Security Review Module)
-   - `Run-GroupReview.ps1` (Group Review Module)
+   - `Modules/All the modules` (All the Modules)
 
 
 2. **Set Up Modules**
