@@ -12,7 +12,7 @@ For detailed guidance, best practices, and remediation advice, visit [aethercred
 
 **Latest Version:** 3.2
 
-<img width="1778" height="864" alt="image" src="https://github.com/user-attachments/assets/353b2f9d-026b-4191-a345-46c8697401e6" />
+<img width="1938" height="782" alt="image" src="https://github.com/user-attachments/assets/b9ef3ef1-f848-4a70-b076-176fd3a27536" />
 
 <img width="1841" height="756" alt="image" src="https://github.com/user-attachments/assets/25338885-0f23-4044-a3a9-60b15bb98b0a" />
 
